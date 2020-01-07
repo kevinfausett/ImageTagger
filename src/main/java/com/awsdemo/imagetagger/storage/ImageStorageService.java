@@ -2,10 +2,9 @@ package com.awsdemo.imagetagger.storage;
 
 import java.util.stream.Stream;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.auth.policy.Resource;
+import com.amazonaws.services.s3.model.S3Object;
 
 /**
  * A service to CRUD images. This serves as a layer of abstraction over the service that touches the S3 APIs in order to make it
@@ -14,11 +13,15 @@ import com.amazonaws.auth.policy.Resource;
  */
 public interface ImageStorageService {
 	
-	void uploadFile(MultipartFile file);
+	String uploadFile(MultipartFile file);
 
-	String getFile(String key);
+	String getUrl(String key);
 
 	void deleteFile(String key);
 	
 	Stream<String> loadAll();
+	
+	public S3Object getObject(String key);
+
+	void emptyBucket();
 }
