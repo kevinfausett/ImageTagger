@@ -1,5 +1,5 @@
 package com.awsdemo.imagetagger;
-import java.io.File;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,36 +9,41 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.awsdemo.imagetagger.data.DynamoImageDaoImpl;
 import com.awsdemo.imagetagger.storage.ImageStorageService;
+import com.awsdemo.imagetagger.vision.RekognitionServiceImpl;
 
 @Controller
 public class FileStorageController {
+	
 	@Autowired
 	ImageStorageService imageStorageService;
 	
-	@GetMapping("/img")
+	@Autowired
+	RekognitionServiceImpl visionService;
+	
+	@Autowired
+	DynamoImageDaoImpl imageDao;
+	
+	@GetMapping("/")
 	public String getPage(Model model) {
-//	    model.addAttribute("files", storageService.loadAll().map(
-//	            path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-//	                "serveFile", path.getFileName().toString()).build().toString())
-//	            .collect(Collectors.toList()));
-//		model.addAttribute("files", imageStorageService.loadAll().map(
-//				path -> MvcUriComponentsBuilder.fromMethodName(FileStorageController.class,
-//						"serveFile", path.getFilename().toString()).build().toString())
-//				.collect(Collectors.toList()));
 		model.addAttribute("files", imageStorageService.loadAll().collect(Collectors.toList()));
 		return "uploadForm";
 	}
 	
 	@PostMapping("/img")
 	public String uploadImg(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-		imageStorageService.uploadFile(file);
+		String key = imageStorageService.uploadFile(file);
+		List<String> labels = visionService.getLabels(key);
 	    redirectAttributes.addFlashAttribute("message",
 	            "You successfully uploaded " + file.getOriginalFilename() + "!");
+	    
+	    redirectAttributes.addFlashAttribute("labels", labels);
+	    imageDao.putItem(key, labels);
 		return "redirect:/img";
 	}
 	
@@ -47,4 +52,20 @@ public class FileStorageController {
 		imageStorageService.deleteFile(key);
 		return "redirect:/img";
 	}
+	
+	// debugging convenience
+	@DeleteMapping("/img/all")
+	public String deleteAll() {
+		imageStorageService.emptyBucket();
+		return "redirect:/img";
+		
+	}
+
+	// debugging convenience
+	@GetMapping("/tags")
+	@ResponseBody
+	public String getTags(@RequestParam("key") String key) {
+		return imageDao.getItem(key);
+	}
+	
 }
