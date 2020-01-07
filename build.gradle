@@ -29,6 +29,16 @@ dependencies {
     jaxb "com.sun.xml.bind:jaxb-xjc:2.4.0"
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  	compile 'com.amazonaws:aws-java-sdk-s3'
+  	// https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
+	compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
+	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-rekognition
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-rekognition', version: '1.11.700'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-core', version: '1.11.700'
+	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.700'
+	  	
+  	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
@@ -37,6 +47,8 @@ dependencies {
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+      	mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+		
 	}
 }
 
