@@ -22,7 +22,10 @@
          </nav>
         <div class="jumbotron">
 			<div th:if="${message}">
-				<h2 th:text="${message}"/>
+				<h3 th:text="${message}"/>
+			</div>
+			<div th:if="${labels}">
+			 <span class="badge badge-secondary"  th:each="label : ${labels}" th:text="${label} + '      '"/>
 			</div>
 			<div>
 				<form method="POST" enctype="multipart/form-data" action="/img">
