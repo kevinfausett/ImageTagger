@@ -26,7 +26,7 @@ class S3Service implements ImageStorageService {
 	
 	@Autowired
 	AmazonS3 amazonS3Client;
-	
+		
 	@Value("${app.awsServices.bucketName}")
 	String bucketName;
 
@@ -38,7 +38,6 @@ class S3Service implements ImageStorageService {
 	    return convFile;
 	}
 
-	
 	@Override
 	public String uploadFile(MultipartFile file) {
 		try {
