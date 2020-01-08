@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.awsdemo.imagetagger.data.DynamoImageDaoImpl;
+import com.awsdemo.imagetagger.search.ElasticsearchServiceImpl;
 import com.awsdemo.imagetagger.storage.ImageStorageService;
 import com.awsdemo.imagetagger.vision.RekognitionServiceImpl;
 
@@ -29,6 +30,9 @@ public class FileStorageController {
 	@Autowired
 	DynamoImageDaoImpl imageDao;
 	
+	@Autowired
+	ElasticsearchServiceImpl searchService;
+	
 	@GetMapping("/")
 	public String getPage(Model model) {
 		model.addAttribute("files", imageStorageService.loadAll().collect(Collectors.toList()));
@@ -43,21 +47,21 @@ public class FileStorageController {
 	            "You successfully uploaded " + file.getOriginalFilename() + "!");
 	    
 	    redirectAttributes.addFlashAttribute("labels", labels);
-	    imageDao.putItem(key, labels);
-		return "redirect:/img";
+	    imageDao.putItem("kevin", key, labels);
+		return "redirect:/";
 	}
 	
 	@DeleteMapping("/img")
 	public String deleteImage(@RequestParam("key") String key) {
 		imageStorageService.deleteFile(key);
-		return "redirect:/img";
+		return "redirect:/";
 	}
 	
 	// debugging convenience
 	@DeleteMapping("/img/all")
 	public String deleteAll() {
 		imageStorageService.emptyBucket();
-		return "redirect:/img";
+		return "redirect:/";
 		
 	}
 
@@ -65,7 +69,14 @@ public class FileStorageController {
 	@GetMapping("/tags")
 	@ResponseBody
 	public String getTags(@RequestParam("key") String key) {
-		return imageDao.getItem(key);
+		return imageDao.getItem("kevin", key);
 	}
 	
+	// testing 
+	@GetMapping("/search")
+	@ResponseBody
+	public String search() {
+		return searchService.getAll();
+		
+	}
 }

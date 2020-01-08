@@ -20,12 +20,16 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.awsdemo.imagetagger.data.DynamoImageDaoImpl;
 
 @Service
 class S3Service implements ImageStorageService {
 	
 	@Autowired
 	AmazonS3 amazonS3Client;
+	
+	@Autowired
+	DynamoImageDaoImpl imageDao;
 		
 	@Value("${app.awsServices.bucketName}")
 	String bucketName;
@@ -86,7 +90,9 @@ class S3Service implements ImageStorageService {
         while (more) {
         	Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
         	while (objIter.hasNext()) {
-        		amazonS3Client.deleteObject(bucketName, objIter.next().getKey());
+        		String key = objIter.next().getKey();
+        		amazonS3Client.deleteObject(bucketName, key);
+        		imageDao.deleteItem("kevin", key);
         	}
 
             if (objectListing.isTruncated()) {

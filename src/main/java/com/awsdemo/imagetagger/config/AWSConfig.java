@@ -18,7 +18,7 @@ public class AWSConfig {
 	AmazonRekognition amazonRekognitionClient() {
 		return AmazonRekognitionClientBuilder.standard().build();
 	}
-	
+
 	@Bean
 	AmazonS3 amazonS3Client(@Value("${cloud.aws.region.static}") String region) {
 		return AmazonS3ClientBuilder.standard().withRegion(region).build();
@@ -28,4 +28,5 @@ public class AWSConfig {
 	AmazonDynamoDB amazonDynamoDBClient(@Value("${cloud.aws.region.static}") String region ){
 		return AmazonDynamoDBClientBuilder.standard().withRegion(region).build();
 	}
+
 }
