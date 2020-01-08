@@ -18,6 +18,8 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
+	
 }
 
 ext {
@@ -30,13 +32,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
   	compile 'com.amazonaws:aws-java-sdk-s3'
-  	// https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
 	compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
-	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-rekognition
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-rekognition', version: '1.11.700'
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-core', version: '1.11.700'
-	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.700'
+	compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-high-level-client', version: '7.5.1'
+	compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-client', version: '7.5.1'
+	implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
+	compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.5.1'
 	  	
   	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
