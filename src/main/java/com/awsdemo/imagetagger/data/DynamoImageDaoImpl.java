@@ -14,7 +14,7 @@ import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 
 @Service
-public class DynamoImageDaoImpl {
+public class DynamoImageDaoImpl implements ImageDao {
 	
 	@Autowired
 	private AmazonDynamoDB amazonDynamoDB;
@@ -44,7 +44,7 @@ public class DynamoImageDaoImpl {
 		keys.put(sortKey, new AttributeValue(s_key));
 		req.setKey(keys);
 		req.setTableName(tableName);
-		return amazonDynamoDB.getItem(req).getItem().get("labels").toString();//. .toString();
+		return amazonDynamoDB.getItem(req).getItem().get("labels").toString();
 	}
 
 	public String deleteItem(@Value("kevin") String p_key, String s_key) {

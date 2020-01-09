@@ -42,7 +42,6 @@ public class ElasticsearchServiceImpl {
 	
 	@PostConstruct
     private void esClient() {
-    	System.out.println("HI KEVIN: " + host);
     	final AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
         AWS4Signer signer = new AWS4Signer();
         signer.setServiceName(serviceName);

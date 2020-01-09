@@ -13,13 +13,10 @@ import com.amazonaws.services.rekognition.model.Image;
 import com.amazonaws.services.rekognition.model.S3Object;
 
 @Service
-public class RekognitionServiceImpl {
+public class RekognitionServiceImpl implements VisionService {
 	
 	@Autowired
 	AmazonRekognition amazonRekognitionClient;
-	
-//	@Autowired
-//	ImageStorageService imageStorageService;
 	
 	@Value("${app.awsServices.bucketName}")
 	String bucketName;

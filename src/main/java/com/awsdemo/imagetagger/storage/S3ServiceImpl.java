@@ -23,14 +23,11 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.awsdemo.imagetagger.data.DynamoImageDaoImpl;
 
 @Service
-class S3Service implements ImageStorageService {
+class S3ServiceImpl implements ImageStorageService {
 	
 	@Autowired
 	AmazonS3 amazonS3Client;
-	
-	@Autowired
-	DynamoImageDaoImpl imageDao;
-		
+			
 	@Value("${app.awsServices.bucketName}")
 	String bucketName;
 
@@ -77,14 +74,9 @@ class S3Service implements ImageStorageService {
 				object -> amazonS3Client.generatePresignedUrl(bucketName, object.getKey(), expiration, HttpMethod.GET).toExternalForm());
 		return urls;
 	}
-	
+
 	@Override
-	public S3Object getObject(String key) {
-		return amazonS3Client.getObject(bucketName, key);
-	}
-	
-	@Override
-	public void emptyBucket() {
+	public void emptyBucket(DynamoImageDaoImpl imageDao) {
 		ObjectListing objectListing = amazonS3Client.listObjects(bucketName);
 		Boolean more = true;
         while (more) {
