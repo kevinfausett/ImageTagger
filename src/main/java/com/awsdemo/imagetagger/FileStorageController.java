@@ -1,5 +1,4 @@
 package com.awsdemo.imagetagger;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,29 +8,21 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.awsdemo.imagetagger.data.DynamoImageDaoImpl;
-import com.awsdemo.imagetagger.search.ElasticsearchServiceImpl;
 import com.awsdemo.imagetagger.storage.ImageStorageService;
-import com.awsdemo.imagetagger.vision.RekognitionServiceImpl;
+import com.awsdemo.imagetagger.taggedimage.TaggedImage;
+import com.awsdemo.imagetagger.taggedimage.TaggedImageServiceImpl;
 
 @Controller
 public class FileStorageController {
 	
 	@Autowired
 	ImageStorageService imageStorageService;
-	
+			
 	@Autowired
-	RekognitionServiceImpl visionService;
-	
-	@Autowired
-	DynamoImageDaoImpl imageDao;
-	
-	@Autowired
-	ElasticsearchServiceImpl searchService;
+	TaggedImageServiceImpl taggedImageService;
 	
 	@GetMapping("/")
 	public String getPage(Model model) {
@@ -41,42 +32,33 @@ public class FileStorageController {
 	
 	@PostMapping("/img")
 	public String uploadImg(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-		String key = imageStorageService.uploadFile(file);
-		List<String> labels = visionService.getLabels(key);
+		TaggedImage img = taggedImageService.postTaggedImage(file);
 	    redirectAttributes.addFlashAttribute("message",
 	            "You successfully uploaded " + file.getOriginalFilename() + "!");
 	    
-	    redirectAttributes.addFlashAttribute("labels", labels);
-	    imageDao.putItem("kevin", key, labels);
+	    redirectAttributes.addFlashAttribute("labels", img.getLabels());
 		return "redirect:/";
 	}
 	
 	@DeleteMapping("/img")
-	public String deleteImage(@RequestParam("key") String key) {
-		imageStorageService.deleteFile(key);
+	public String deleteImage(@RequestParam("key") String key, @RequestParam("user_id") String userId) {
+		taggedImageService.deleteTaggedImage(key, userId);
 		return "redirect:/";
 	}
 	
 	// debugging convenience
 	@DeleteMapping("/img/all")
 	public String deleteAll() {
-		imageStorageService.emptyBucket();
+		taggedImageService.deleteAll();
 		return "redirect:/";
 		
 	}
 
-	// debugging convenience
-	@GetMapping("/tags")
-	@ResponseBody
-	public String getTags(@RequestParam("key") String key) {
-		return imageDao.getItem("kevin", key);
-	}
+//	// debugging convenience
+//	@GetMapping("/tags")
+//	@ResponseBody
+//	public String getTags(@RequestParam("key") String key) {
+//		return imageDao.getItem("kevin", key);
+//	}
 	
-	// testing 
-	@GetMapping("/search")
-	@ResponseBody
-	public String search() {
-		return searchService.getAll();
-		
-	}
 }
