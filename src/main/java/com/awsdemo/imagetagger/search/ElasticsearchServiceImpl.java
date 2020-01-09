@@ -63,5 +63,16 @@ public class ElasticsearchServiceImpl {
 		}
 	}
 	
+	public String search(String term) {
+		SearchRequest req = new SearchRequest(index);
+		SearchSourceBuilder builder = new SearchSourceBuilder();
+		builder.query(QueryBuilders.matchQuery("labels", term));
+		req.source(builder);
+		try {
+			return esClient.search(req, RequestOptions.DEFAULT).toString();
+		} catch (IOException e) {
+			return e.getMessage();
+		}
+	}
 
 }
