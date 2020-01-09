@@ -16,6 +16,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +24,14 @@ import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
+import com.awsdemo.imagetagger.storage.ImageStorageService;
 
 @Service
 public class ElasticsearchServiceImpl {
 	
-//	@Autowired
-//	private AWSElasticsearch searchClient;
+	//todo: decouple
+	@Autowired
+	ImageStorageService imageStorageService;
 	
 	@Value("${cloud.aws.region.static}")
 	private String region;
@@ -87,7 +90,8 @@ public class ElasticsearchServiceImpl {
 		List<String> keys = new ArrayList<String>();
 		SearchResponse res = esClient.search(req, RequestOptions.DEFAULT);
 		for (SearchHit hit : res.getHits().getHits()) {
-			keys.add(hit.field("s3key").toString());
+			String key = hit.getSourceAsMap().get("s3key").toString();
+			keys.add(imageStorageService.getUrl(key));
 		}
 		return keys;
 	}
