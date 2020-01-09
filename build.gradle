@@ -40,6 +40,7 @@ dependencies {
 	compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-client', version: '7.5.1'
 	implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 	compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.5.1'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-sts', version: '1.11.702'
 	  	
   	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
