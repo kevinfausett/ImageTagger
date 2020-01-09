@@ -24,14 +24,14 @@ public class SearchController {
 		return searchService.getAll();
 	}
 	
-//	@GetMapping("/searchdebug/{term:.+}")
-//	@ResponseBody
-//	public String searchTerm(@PathVariable String term) {
-//		System.out.println(term);
-//		return searchService.searchStr(term);
-//	}
-	
 	@GetMapping("/searchdebug/{term:.+}")
+	@ResponseBody
+	public String searchTerm(@PathVariable String term) {
+		System.out.println(term);
+		return searchService.searchStr(term);
+	}
+
+	@GetMapping("/search/{term:.+}")
 	public String searchTerm(@PathVariable String term, Model model) {
 		List<String> matches;
 		try {
@@ -39,7 +39,6 @@ public class SearchController {
 			model.addAttribute("matches", matches);
 			model.addAttribute("message", term + ": " + matches.size() + " matches");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "search";
