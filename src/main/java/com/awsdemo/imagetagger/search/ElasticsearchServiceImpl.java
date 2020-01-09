@@ -1,16 +1,20 @@
 package com.awsdemo.imagetagger.search;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -63,7 +67,7 @@ public class ElasticsearchServiceImpl {
 		}
 	}
 	
-	public String search(String term) {
+	public String searchStr(String term) {
 		SearchRequest req = new SearchRequest(index);
 		SearchSourceBuilder builder = new SearchSourceBuilder();
 		builder.query(QueryBuilders.matchQuery("labels", term));
@@ -74,5 +78,17 @@ public class ElasticsearchServiceImpl {
 			return e.getMessage();
 		}
 	}
-
+	
+	public List<String> search(String term) throws IOException {
+		SearchRequest req = new SearchRequest(index);
+		SearchSourceBuilder builder = new SearchSourceBuilder();
+		builder.query(QueryBuilders.matchQuery("labels", term));
+		req.source(builder);
+		List<String> keys = new ArrayList<String>();
+		SearchResponse res = esClient.search(req, RequestOptions.DEFAULT);
+		for (SearchHit hit : res.getHits().getHits()) {
+			keys.add(hit.field("s3key").toString());
+		}
+		return keys;
+	}
 }

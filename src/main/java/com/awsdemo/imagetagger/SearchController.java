@@ -1,7 +1,11 @@
 package com.awsdemo.imagetagger;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,10 +24,26 @@ public class SearchController {
 		return searchService.getAll();
 	}
 	
-	@GetMapping("/search/{term:.+}")
-	@ResponseBody
-	public String searchTerm(@PathVariable String term) {
-		return searchService.search(term);
+//	@GetMapping("/searchdebug/{term:.+}")
+//	@ResponseBody
+//	public String searchTerm(@PathVariable String term) {
+//		System.out.println(term);
+//		return searchService.searchStr(term);
+//	}
+	
+	@GetMapping("/searchdebug/{term:.+}")
+	public String searchTerm(@PathVariable String term, Model model) {
+		List<String> matches;
+		try {
+			matches = searchService.search(term);
+			model.addAttribute("matches", matches);
+			model.addAttribute("message", term + ": " + matches.size() + " matches");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "search";
 	}
+
 
 }
